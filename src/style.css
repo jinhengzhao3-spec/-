@@ -179,3 +179,7 @@
 /* Keep the floating glass navigation above all portfolio cards. */
 .nav.is-floating{z-index:10010;background:rgba(24,26,25,.58);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);border-color:rgba(255,255,255,.24);box-shadow:0 14px 44px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.08)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.nav.is-floating{background:rgba(24,26,25,.94)}}
+
+/* Show the full motion poster while autoplay is paused or still loading. */
+.poster-subject-video:not(.is-playing){object-fit:contain;background:#fff}
+

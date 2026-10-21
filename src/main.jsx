@@ -57,7 +57,61 @@ const otherProjects=[
 const skills=[['01','AIGC 内容制作','即梦、Midjourney、GPT、Lovart 与 LIPTV；AI 图像视频生成、人物场景资产与镜头测试。','即梦 / MJ / GPT / LIPTV'],['02','视频剪辑与包装','Premiere、After Effects、剪映专业版；节奏设计、音乐匹配、字幕与动态包装。','PR / AE / 剪映'],['03','三维制作','UE5 场景搭建、材质、灯光与镜头动画；Blender 建模和基础材质处理。','UE5 / Blender / C4D'],['04','视觉设计','Photoshop、Illustrator；平面视觉、商业视觉方案、图片后期与风格统一。','PS / AI / ART DIRECTION']];
 const glowSettings={edgeSensitivity:30,glowColor:'40 80 80',backgroundColor:'#20211f',borderRadius:8,glowRadius:20,glowIntensity:1.0,coneSpread:25,animated:false,colors:['#c084fc','#f472b6','#38bdf8']};
 const assetUrl=(path)=>`${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
-function App(){const [menu,setMenu]=React.useState(false); const [reduceMotion,setReduceMotion]=React.useState(false); const [showInteriorBg,setShowInteriorBg]=React.useState(false); const [navFloating,setNavFloating]=React.useState(false); const [activeProject,setActiveProject]=React.useState(null); const dialogRef=React.useRef(null); React.useEffect(()=>{const query=window.matchMedia(' (prefers-reduced-motion: reduce)'.trim());const update=()=>setReduceMotion(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update)},[]); React.useEffect(()=>{const hero=document.querySelector('.hero-poster');if(!hero)return;const update=()=>{const pastHero=hero.getBoundingClientRect().bottom<=0;setShowInteriorBg(pastHero);setNavFloating(pastHero)};update();window.addEventListener('scroll',update,{passive:true});return()=>window.removeEventListener('scroll',update)},[]); React.useEffect(()=>{const heroVideo=document.querySelector(".poster-subject-video");const interiorVideo=document.querySelector(".interior-motion-bg video");const playWhenReady=(video,active)=>{if(!video)return()=>{};if(!active){video.pause();return()=>{}}const play=()=>{if(document.visibilityState==="visible")video.play().catch(()=>{})};if(video.readyState>=2)play();else{video.addEventListener("canplay",play,{once:true});video.load()}return()=>video.removeEventListener("canplay",play)};const cleanups=[playWhenReady(heroVideo,!reduceMotion),playWhenReady(interiorVideo,showInteriorBg&&!reduceMotion)];const retry=()=>{if(document.visibilityState!=="visible")return;if(!reduceMotion)heroVideo?.play().catch(()=>{});if(showInteriorBg&&!reduceMotion)interiorVideo?.play().catch(()=>{})};document.addEventListener("visibilitychange",retry);return()=>{cleanups.forEach(cleanup=>cleanup());document.removeEventListener("visibilitychange",retry)}},[reduceMotion,showInteriorBg]); React.useEffect(()=>{const d=dialogRef.current;if(!d)return;if(activeProject&&!d.open)d.showModal();else if(!activeProject&&d.open)d.close()},[activeProject]); return <><PortfolioMotion/><SmoothCursor isHome={!navFloating}/><div className={`interior-motion-bg${showInteriorBg?' is-visible':''}`} aria-hidden="true"><video autoPlay={showInteriorBg && !reduceMotion} loop muted playsInline preload="none" width="1920" height="1080"><source src={assetUrl('/media/interior-background.mp4')} type="video/mp4"/></video><div className="interior-motion-shade"/></div><header className={`nav${navFloating?' is-floating':''}`}><a className="brand" href="#top"><span className="brandmark">赵</span><span>赵金恒 <small>视觉创作者</small></span></a><nav className={menu?'open':''}><a href="#about" onClick={()=>setMenu(false)}>关于我 <i>01</i></a><a href="#work" onClick={()=>setMenu(false)}>作品精选 <i>02</i></a><a href="#strength" onClick={()=>setMenu(false)}>能力版图 <i>03</i></a></nav><a className="nav-cta" href={SITE_LINKS.email}>联系我 <ArrowUpRight size={15}/></a><button className="menu" onClick={()=>setMenu(!menu)} aria-label="菜单">{menu?<X/>:<Menu/>}</button></header>
+function App(){const [menu,setMenu]=React.useState(false); const [reduceMotion,setReduceMotion]=React.useState(false); const [showInteriorBg,setShowInteriorBg]=React.useState(false); const [navFloating,setNavFloating]=React.useState(false); const [activeProject,setActiveProject]=React.useState(null); const dialogRef=React.useRef(null); React.useEffect(()=>{const query=window.matchMedia(' (prefers-reduced-motion: reduce)'.trim());const update=()=>setReduceMotion(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update)},[]); React.useEffect(()=>{const hero=document.querySelector('.hero-poster');if(!hero)return;const update=()=>{const pastHero=hero.getBoundingClientRect().bottom<=0;setShowInteriorBg(pastHero);setNavFloating(pastHero)};update();window.addEventListener('scroll',update,{passive:true});return()=>window.removeEventListener('scroll',update)},[]); React.useEffect(() => {
+  const videos = [
+    { element: document.querySelector('.poster-subject-video'), enabled: !reduceMotion },
+    { element: document.querySelector('.interior-motion-bg video'), enabled: showInteriorBg && !reduceMotion },
+  ];
+  const syncPlayingState = (video) => {
+    video.classList.toggle('is-playing', !video.paused && video.readyState >= 2);
+  };
+  const tryPlay = ({ element: video, enabled }) => {
+    if (!video) return;
+    if (!enabled) {
+      video.pause();
+      syncPlayingState(video);
+      return;
+    }
+    if (document.visibilityState !== 'visible' || !video.paused) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.play().catch(() => {});
+  };
+  const retryPlayback = () => videos.forEach(tryPlay);
+  const mediaEvents = [];
+
+  videos.forEach(({ element: video, enabled }) => {
+    if (!video) return;
+    const onMediaReady = () => tryPlay(videos.find((entry) => entry.element === video));
+    const onPlaying = () => syncPlayingState(video);
+    const onPause = () => syncPlayingState(video);
+    const onError = () => { video.dataset.playbackError = String(video.error?.code || 'unknown'); };
+    ['loadeddata', 'canplay'].forEach((event) => video.addEventListener(event, onMediaReady));
+    video.addEventListener('playing', onPlaying);
+    video.addEventListener('pause', onPause);
+    video.addEventListener('error', onError);
+    mediaEvents.push(() => {
+      ['loadeddata', 'canplay'].forEach((event) => video.removeEventListener(event, onMediaReady));
+      video.removeEventListener('playing', onPlaying);
+      video.removeEventListener('pause', onPause);
+      video.removeEventListener('error', onError);
+    });
+    syncPlayingState(video);
+    tryPlay({ element: video, enabled });
+  });
+
+  window.addEventListener('pageshow', retryPlayback);
+  window.addEventListener('focus', retryPlayback);
+  document.addEventListener('visibilitychange', retryPlayback);
+  document.addEventListener('pointerdown', retryPlayback, { passive: true });
+  return () => {
+    mediaEvents.forEach((removeListeners) => removeListeners());
+    window.removeEventListener('pageshow', retryPlayback);
+    window.removeEventListener('focus', retryPlayback);
+    document.removeEventListener('visibilitychange', retryPlayback);
+    document.removeEventListener('pointerdown', retryPlayback);
+  };
+}, [reduceMotion, showInteriorBg]); React.useEffect(()=>{const d=dialogRef.current;if(!d)return;if(activeProject&&!d.open)d.showModal();else if(!activeProject&&d.open)d.close()},[activeProject]); return <><PortfolioMotion/><SmoothCursor isHome={!navFloating}/><div className={`interior-motion-bg${showInteriorBg?' is-visible':''}`} aria-hidden="true"><video autoPlay={showInteriorBg && !reduceMotion} loop muted playsInline preload="none" width="1920" height="1080"><source src={assetUrl('/media/interior-background.mp4')} type="video/mp4"/></video><div className="interior-motion-shade"/></div><header className={`nav${navFloating?' is-floating':''}`}><a className="brand" href="#top"><span className="brandmark">赵</span><span>赵金恒 <small>视觉创作者</small></span></a><nav className={menu?'open':''}><a href="#about" onClick={()=>setMenu(false)}>关于我 <i>01</i></a><a href="#work" onClick={()=>setMenu(false)}>作品精选 <i>02</i></a><a href="#strength" onClick={()=>setMenu(false)}>能力版图 <i>03</i></a></nav><a className="nav-cta" href={SITE_LINKS.email}>联系我 <ArrowUpRight size={15}/></a><button className="menu" onClick={()=>setMenu(!menu)} aria-label="菜单">{menu?<X/>:<Menu/>}</button></header>
 <main id="top"><section className="hero hero-poster"><div className="poster-art"><video className="poster-subject-video" autoPlay={!reduceMotion} loop muted playsInline preload="auto" width="1920" height="1080" poster={assetUrl('/media/hero-portrait-poster.png')} aria-hidden="true"><source src={assetUrl('/media/hero-background.mp4')} type="video/mp4"/></video><div className="poster-headline">赵金恒</div><div className="poster-aged">AGED24</div><i className="poster-accent-line poster-accent-top" aria-hidden="true"/><i className="poster-accent-line poster-accent-bottom" aria-hidden="true"/><div className="poster-label poster-left-a"><b>视觉设计</b><span>影像创作 / 视觉传达</span></div><div className="poster-label poster-left-b"><b>北京 · 唐山</b><span>AIGC 短片 / 三维动画</span></div><div className="poster-label poster-right-bottom"><b>把想象变成<br/>可观看的现实</b></div><div className="poster-title-card"><span>把想象，变成可观看的现实。</span><strong>影像的<br/>另一种可能</strong></div><div className="poster-tour"><b>作品</b></div><a className="poster-explore" href="#work"><span>探索精选项目</span><ArrowDown size={15}/></a></div></section>
 <section className="intro section" id="about"><div className="section-head"><span className="label"><b>01</b> / PROFILE</span><span className="side-note">ABOUT THE CREATOR</span></div><div className="intro-layout"><div className="portrait"><img src={assetUrl('/media/profile-portrait.png')} alt="赵金恒黑白肖像"/><div className="portrait-caption">赵金恒<br/><span>AIGC 视频生成师</span></div><div className="portrait-ring"/></div><div className="intro-text"><div className="mini-title">赵金恒 <span>PROFILE</span></div><h2>AIGC 视频生成师<br/><em>AIGC 内容创作者</em></h2><p className="profile-role">视频剪辑师</p><div className="contact-row"><a href={SITE_LINKS.phone}>手机：155 3282 8782 <ArrowUpRight size={14}/></a><a href={SITE_LINKS.email}>邮箱：1696994537@qq.com <ArrowUpRight size={14}/></a></div><div className="profile-intentions"><div><small>求职方向</small><p>AI 视频生成 / AI 影视短片 / AIGC 广告与短视频</p></div><div><small>求职意向</small><p>北京</p></div></div><div className="personal-advantage"><div className="advantage-heading"><b>个人优势</b><span>PERSONAL STRENGTHS</span></div><p>华北理工大学，视觉传达设计本科、数字媒体艺术方向。熟悉从创意讨论、分镜规划、AI 人物与场景资产制作、文生视频测试到剪辑包装的内容生产流程。</p><p>参与明星 AI 肖像授权短视频项目，擅长商业广告、电影化叙事；此外有三维动画与实景拍摄基础，兼具视觉设计，美术基础扎实，有良好的审美。</p></div></div></div><div className="experience-block"><div className="experience-heading"><span>经历与教育</span><span>CAREER / EDUCATION</span></div><div className="experience-grid"><BorderGlow className="experience-glow" {...glowSettings}><article><small>2026.07 — 09</small><h3>聚给力文化有限公司</h3><p>AI 项目组 / AIGC 视频制作师 · 演员肖像授权短片全流程制作与实景口播拍摄执行。</p></article></BorderGlow><BorderGlow className="experience-glow" {...glowSettings}><article><small>2024.09 — 2026.05</small><h3>达瓦伯乐影像科技有限公司</h3><p>职业院校讲师 · 教授视听语言、UE5、建模、材质与特效等数字媒体课程。</p></article></BorderGlow><BorderGlow className="experience-glow" {...glowSettings}><article><small>2024.05 — 08</small><h3>景凡未来科技有限公司</h3><p>表现师 · 参与数字展示项目的空间氛围、材质表现与视觉方案落地。</p></article></BorderGlow><BorderGlow className="experience-glow" {...glowSettings}><article><small>2020.09 — 2024.06</small><h3>华北理工大学</h3><p>本科 · 视觉传达设计（数字媒体艺术方向）。</p></article></BorderGlow></div></div></section>
 <section className="reel-interlude" aria-label="动态影像氛围展示"><video className="reel-interlude-video" autoPlay={!reduceMotion} loop muted playsInline preload="none" loading="lazy" width="1920" height="1080" poster={assetUrl('/media/profile-portrait.png')}><source src={assetUrl('/media/quiet-reel.mp4')} type="video/mp4"/></video><div className="reel-interlude-shade"/><div className="reel-interlude-copy"><span>AI VIDEO / MOVING IMAGE</span><p>让影像缓慢发生。<i> — 动态视觉实验</i></p></div><span className="reel-interlude-index">ZH · 01 / MOTION STUDY</span></section>
