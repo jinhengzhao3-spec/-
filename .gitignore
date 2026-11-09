@@ -4,3 +4,5 @@ gerenzhan/
 gerenzhan2/
 .DS_Store
 Thumbs.db
+/tmp/
+/output/

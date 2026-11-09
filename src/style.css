@@ -42,16 +42,26 @@
 
 /* Profile portrait update: retain its editorial photo background without screen blending. */
 .portrait img{object-position:32% center;filter:grayscale(1) brightness(.82) contrast(1.04);mix-blend-mode:normal;opacity:.92}
-.reel-interlude{height:clamp(300px,42vw,590px);min-height:300px;position:relative;isolation:isolate;overflow:hidden;background:#050505;color:#e5e5df;display:grid;place-items:center;margin:0 0 75px}
-.reel-interlude-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) brightness(.36) contrast(.92);opacity:.34;mask-image:linear-gradient(90deg,transparent 0%,#000 18%,#000 82%,transparent 100%)}
-.reel-interlude-shade{position:absolute;inset:0;background:linear-gradient(90deg,#050505 0%,rgba(5,5,5,.15) 40%,rgba(5,5,5,.15) 60%,#050505 100%),linear-gradient(0deg,#050505 0%,transparent 40%,rgba(0,0,0,.2) 100%);z-index:1}
-.reel-interlude-copy{position:relative;z-index:2;width:min(1700px,88.8%);padding-top:22px}
-.reel-interlude-copy>span,.reel-interlude-index{font:9px 'DM Mono',monospace;letter-spacing:.16em;color:#92958d}
-.reel-interlude-copy p{font-size:clamp(22px,3vw,40px);font-weight:300;letter-spacing:.05em;margin:22px 0 0;color:#dedfd8}
-.reel-interlude-copy i{font-size:12px;font-style:normal;color:#92958d;letter-spacing:.08em;margin-left:10px}
-.reel-interlude-index{position:absolute;z-index:2;right:5.6%;bottom:28px}
-@media(max-width:600px){.reel-interlude{height:300px;margin-bottom:50px}.reel-interlude-video{opacity:.24}.reel-interlude-copy>span,.reel-interlude-index{font-size:7px}.reel-interlude-copy p{font-size:21px}.reel-interlude-copy i{display:block;margin:12px 0 0;font-size:10px}}
-@media(prefers-reduced-motion:reduce){.reel-interlude-video{opacity:.18}}
+/* Full-bleed portfolio rail: the motion band at the end of the profile page now carries the whole book. */
+.portfolio-band{position:relative;isolation:isolate;overflow:hidden;display:block;background:#060706;color:#e5e5df;margin:0 0 75px;padding:0 0 24px}
+.portfolio-band-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) brightness(.34) contrast(.9);opacity:.16}
+.portfolio-band-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(6,7,6,.94) 0%,rgba(6,7,6,.5) 30%,rgba(6,7,6,.56) 70%,rgba(6,7,6,.96) 100%)}
+.portfolio-band-meta{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:92px 5.6% 0;font:9px 'DM Mono',monospace;letter-spacing:.16em;color:#92958d}
+.portfolio-band-copy{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;padding:18px 5.6% 4px}
+.portfolio-band-copy p{font-size:clamp(24px,3vw,42px);font-weight:300;letter-spacing:.05em;margin:0;color:#dedfd8}
+.portfolio-band-copy p i{font-size:12px;font-style:normal;color:#92958d;letter-spacing:.08em;margin-left:10px}
+.portfolio-band-count{display:flex;align-items:baseline;gap:10px;font:10px 'DM Mono',monospace;letter-spacing:.14em;color:#8b8e85;white-space:nowrap}
+.portfolio-band-count i{font-style:normal;font-size:10px;color:#6f726a;letter-spacing:.1em}
+.portfolio-band-count .hint-touch{display:none}
+@media(hover:none),(pointer:coarse){.portfolio-band-count .hint-pointer{display:none}.portfolio-band-count .hint-touch{display:inline}}
+.portfolio-stage{position:relative;z-index:2;width:100%;height:clamp(380px,44vw,600px);margin-top:6px}
+.portfolio-stage .flex-carousel__title{font-family:'Noto Sans SC',sans-serif;font-size:13px;font-weight:400;letter-spacing:.02em;color:#e2e3dc}
+.portfolio-stage .flex-carousel__count{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;color:#a9aca3}
+.portfolio-stage .flex-carousel__slash{color:#6f726a}
+.portfolio-stage .flex-carousel:focus-visible{box-shadow:inset 0 0 0 1px rgba(230,56,28,.55)}
+@media(max-width:900px){.portfolio-band-meta{padding-top:72px}.portfolio-stage{height:clamp(320px,52vw,500px)}}
+@media(max-width:600px){.portfolio-band{margin-bottom:50px;padding-bottom:18px}.portfolio-band-meta{padding:66px 5.5% 0;font-size:7px}.portfolio-band-copy{padding:14px 5.5% 2px}.portfolio-band-copy p{font-size:21px}.portfolio-band-copy p i{display:block;margin:10px 0 0;font-size:10px}.portfolio-band-count{font-size:8px;gap:7px}.portfolio-band-count i{font-size:8px}.portfolio-stage{height:clamp(280px,70vw,400px)}.portfolio-stage .flex-carousel__title{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.portfolio-band-video{opacity:.1}}
 /* Two project windows share a four-column poster grid; unused slots stay open for future work. */
 .window-gallery.gallery-2{grid-template-columns:repeat(4,minmax(0,1fr))}
 .window-empty{aspect-ratio:.78;min-width:0;border:1px dashed rgba(227,229,220,.18);background:rgba(255,255,255,.012)}
@@ -183,3 +193,74 @@
 /* Show the full motion poster while autoplay is paused or still loading. */
 .poster-subject-video:not(.is-playing){object-fit:contain;background:#fff}
 
+/* Option C typography: self-hosted Manrope and DM Mono for Latin and numerals only.
+   Chinese text keeps falling through to the system face, so it looks exactly as before. */
+@font-face{font-family:'Manrope';font-style:normal;font-weight:100 900;font-display:swap;src:url('./fonts/manrope-latin.woff2') format('woff2')}
+@font-face{font-family:'DM Mono';font-style:normal;font-weight:300;font-display:swap;src:url('./fonts/dm-mono-300.woff2') format('woff2')}
+@font-face{font-family:'DM Mono';font-style:normal;font-weight:400;font-display:swap;src:url('./fonts/dm-mono-400.woff2') format('woff2')}
+@font-face{font-family:'DM Mono';font-style:normal;font-weight:500;font-display:swap;src:url('./fonts/dm-mono-500.woff2') format('woff2')}
+
+
+/* Lanyard ID card: the profile portrait is now a physical badge hanging beside the bio. */
+.portrait{display:flex;flex-direction:column;height:min(640px,47vw);min-height:540px;padding:0;background:transparent;overflow:visible}
+.portrait:after{content:none}
+.portrait>.lanyard{flex:1;min-height:0;width:114%;margin-left:-7%}
+.portrait-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-top:8px;padding-top:14px;border-top:1px solid var(--line)}
+.portrait-foot>span{font-size:12px;letter-spacing:.06em;color:#dedfd8;line-height:1.5}
+.portrait-foot small{display:block;margin-top:3px;font:9px 'DM Mono',monospace;letter-spacing:.12em;color:#8d9087}
+.portrait-foot i{font-style:normal;font:9px 'DM Mono',monospace;letter-spacing:.1em;line-height:1.6;color:#7e8179;text-align:right}
+@media(max-width:900px){.portrait{height:600px;min-height:0}}
+@media(max-width:600px){.portrait{height:470px;width:100%;min-height:0;margin-left:0}.portrait-foot>span{font-size:11px}.portrait-foot i{font-size:8px}}
+/* Typography pass for the profile page now that the badge shares the row with the copy. */
+.intro-text .mini-title{margin-bottom:4px}
+.intro h2{font-size:clamp(40px,4.6vw,64px);line-height:1.16;letter-spacing:-.055em;margin:20px 0 22px}
+.profile-role{margin:0 0 26px;color:#a9aca3}
+.contact-row{margin:26px 0 42px}
+.personal-advantage{margin-top:30px}
+.personal-advantage p{line-height:2}
+.profile-intentions{padding:22px 0}
+@media(max-width:900px){.intro h2{font-size:clamp(38px,6vw,54px)}}
+/* Mobile pass: portrait screens get a re-stacked poster, calmer section heads and no sideways drift. */
+body{overflow-x:hidden}
+@media(max-width:600px){
+  /* Hero: keep the full-bleed plate, but lay the type out as a readable column. */
+  .hero-poster{height:calc(100svh - 64px);min-height:520px;padding:0;background:#0a0b0a}
+  .nav{background:rgba(10,11,10,.92);border-bottom-color:rgba(255,255,255,.08);backdrop-filter:blur(8px)}
+  .nav .brand,.nav nav,.nav .nav-cta,.nav .menu{color:#f0f0ec}
+  .nav .brand small,.nav nav i{color:#a4a79e}
+  .nav .brandmark{border-color:rgba(240,240,236,.45);color:#ef482d}
+  .nav .nav-cta{border-color:rgba(240,240,236,.4)}
+  .poster-art{position:relative;display:block;width:100%;height:100%;background:#0a0b0a}
+  .poster-subject-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 28%}
+  .poster-art:after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(10,11,10,.8) 0%,rgba(10,11,10,.16) 30%,rgba(10,11,10,.24) 54%,rgba(10,11,10,.9) 84%,#0a0b0a 100%)}
+  .poster-headline{left:7%;right:7%;top:15%;width:auto;text-align:left;font-size:20vw;line-height:.9;letter-spacing:-.02em}
+  .poster-accent-top{left:7%;right:7%;top:29%;width:auto}
+  .poster-accent-bottom{display:none}
+  .poster-aged{left:7%;top:31.5%;width:auto;text-align:left;font-size:12px;letter-spacing:.26em}
+  .poster-left-a{left:7%;top:auto;bottom:38%;width:44%}
+  .poster-left-b{left:51%;top:auto;bottom:38%;width:44%}
+  .poster-label b{font-size:13px;letter-spacing:-.01em;line-height:1.2}
+  .poster-label span{font-size:9px;letter-spacing:.01em;line-height:1.55;color:#e6d3cd}
+  .poster-right-bottom{display:none}
+  .poster-title-card{left:7%;right:7%;top:auto;bottom:14%;width:auto;height:auto;padding:0;gap:10px}
+  .poster-title-card>span{font-size:10px;letter-spacing:.02em;white-space:normal;line-height:1.5}
+  .poster-title-card strong{font-size:12.6vw;line-height:.96;white-space:normal;letter-spacing:-.06em}
+  .poster-tour{display:none}
+  .poster-explore{left:7%;top:auto;bottom:4.5%;font-size:10px;letter-spacing:.04em;gap:12px}
+  .poster-explore svg{width:32px;height:32px;padding:8px}
+
+  /* Badge: never wider than the column, so the page stops drifting sideways. */
+  .portrait>.lanyard{width:100%;margin-left:0}
+
+  /* Capabilities: stack the heading over its note instead of squeezing both. */
+  .strength-head{display:block;padding:30px 0 26px}
+  .strength-head h2{font-size:clamp(38px,10.4vw,48px);line-height:1.14}
+  .strength-head p{font-size:10.5px;line-height:1.95;margin:16px 0 0;max-width:100%}
+
+  /* Small legibility lifts. */
+  .window-gallery figcaption{font-size:7px;padding:16px 7px 7px}
+  .work-title p{font-size:10px}
+  .tools p{font-size:9px;line-height:1.9}
+  .portfolio-band-count{font-size:9px}
+  .collection-hint,.portfolio-band-count i{font-size:9px}
+}

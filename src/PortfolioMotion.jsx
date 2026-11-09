@@ -46,9 +46,9 @@ export default function PortfolioMotion() {
               scrollTrigger: { trigger: experience, start: 'top 78%', once: true },
             });
           }
-          gsap.fromTo(intro.querySelector('.portrait img'), { clipPath: 'inset(0 0 100% 0)', scale: 1.06 }, {
-            clipPath: 'inset(0 0 0% 0)', scale: 1, duration: 1.35, ease: 'power3.out',
-            scrollTrigger: { trigger: intro.querySelector('.portrait'), start: 'top 78%', once: true },
+          gsap.fromTo(intro.querySelector('.portrait'), { opacity: 0, y: 46 }, {
+            opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', clearProps: 'transform',
+            scrollTrigger: { trigger: intro.querySelector('.portrait'), start: 'top 80%', once: true },
           });
           gsap.fromTo(intro.querySelectorAll('.intro-text > :not(h2)'), { y: 24, opacity: 0 }, {
             y: 0, opacity: 1, duration: 0.8, stagger: 0.09, clearProps: 'transform',
@@ -88,15 +88,15 @@ export default function PortfolioMotion() {
           });
         }
 
-        const reel = document.querySelector('.reel-interlude');
-        if (reel) {
-          gsap.fromTo(reel.querySelector('.reel-interlude-video'), { clipPath: 'inset(12% 5% 12% 5%)', scale: 1.06 }, {
+        const band = document.querySelector('.portfolio-band');
+        if (band) {
+          gsap.fromTo(band.querySelector('.portfolio-band-video'), { clipPath: 'inset(10% 4% 10% 4%)', scale: 1.05 }, {
             clipPath: 'inset(0% 0% 0% 0%)', scale: 1, ease: 'none',
-            scrollTrigger: { trigger: reel, start: 'top 85%', end: 'bottom 35%', scrub: 0.7 },
+            scrollTrigger: { trigger: band, start: 'top 88%', end: 'bottom 40%', scrub: 0.7 },
           });
-          gsap.fromTo(reel.querySelector('.reel-interlude-copy'), { y: 34, opacity: 0 }, {
-            y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', clearProps: 'transform',
-            scrollTrigger: { trigger: reel, start: 'top 70%', once: true },
+          gsap.fromTo(band.querySelectorAll('.portfolio-band-meta, .portfolio-band-copy'), { y: 30, opacity: 0 }, {
+            y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: 'power3.out', clearProps: 'transform',
+            scrollTrigger: { trigger: band, start: 'top 72%', once: true },
           });
         }
       });
