@@ -264,3 +264,9 @@ body{overflow-x:hidden}
   .portfolio-band-count{font-size:9px}
   .collection-hint,.portfolio-band-count i{font-size:9px}
 }
+/* Three-cover window: keep the four-column rhythm so the reserved slot stays in line. */
+.window-gallery.gallery-3{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:600px){.window-gallery.gallery-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Empty cover slot: reserve the space with a quiet "coming soon" label. */
+.window-empty .border-glow-inner>span{display:grid;place-items:center;height:100%;font:11px 'DM Mono',monospace;letter-spacing:.3em;color:#9a9d94;text-align:center;padding:0 6px}
+@media(max-width:600px){.window-empty .border-glow-inner>span{font-size:9px;letter-spacing:.2em}}
